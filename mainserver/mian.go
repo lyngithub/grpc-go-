@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"time"
@@ -24,10 +25,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed too listen :%s", err.Error())
 	}
+
 	s := grpc.NewServer()
 	// 注册服务
 	pb.RegisterUserCoinServer(s, &ugserver.UgCoinServer{})
 	pb.RegisterUserGradeServer(s, &ugserver.UgGradeServer{})
+	reflection.Register(s)
 	// 启动服务
 	log.Printf("server listening at %v\n", lis.Addr())
 	if err := s.Serve(lis); err != nil {
